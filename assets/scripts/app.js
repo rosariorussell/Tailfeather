@@ -212,8 +212,8 @@ var lastFmKey = ''
 
     // get JSON data from 2 APIs
     var youtubeKey = 'https://www.googleapis.com/youtube/v3/search?part=snippet&q=' + artist + '&key=AIzaSyDKESyOchwYmT_52LK5F2RZ-aXUP0Y6Qf4'
-    lastFmKey = 'http://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist=' + artist + '&api_key=1e9fc5247766066fcb2651b3458fb07e&format=json'
-    var lastFmKey2 = 'http://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist=' + artist + '&api_key=1e9fc5247766066fcb2651b3458fb07e&format=json'
+    var lastFmKey = 'https://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist=' + artist + '&api_key=1e9fc5247766066fcb2651b3458fb07e&format=json'
+    var lastFmKey2 = 'https://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist=' + artist + '&api_key=1e9fc5247766066fcb2651b3458fb07e&format=json'
     var youtubeJson;
     var lastfmJson;
 
