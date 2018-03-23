@@ -1,0 +1,67 @@
+#header {
+    position: relative;
+    background-color: #4abdac;
+    border-bottom: 1px solid black;
+}
+
+#brand {
+    font-size: 40px;
+}
+
+#mainHeading {
+    display: inline-block;
+    margin: 0;
+
+}
+
+#searchForm {
+    display: inline-block;
+    top: -7px;
+    position: relative;
+}
+
+#searchIcon {
+    float: right;
+    margin-right: 10px;
+    margin-top: -20px;
+    position: relative;
+    z-index: 2;
+    color: red;
+}
+
+#searchBar {
+    display: inline-block;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    text-align: right;
+    padding-bottom: 0;
+    padding-top: 0;
+    outline: 0;
+
+}
+
+#searchButton {
+
+    display: inline-block;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    padding-bottom: 0;
+    padding-top: 0;
+
+}
+
+#profileIcon {
+    font-size: 30px;
+    position: absolute;
+    
+    bottom: 15px;
+}
+
+.hide {
+    display: none;
+}
+
+
+#mainLanding {
+    margin: 20px 0;
+}
