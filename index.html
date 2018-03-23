@@ -11,14 +11,9 @@
 
 
     <link rel="stylesheet" href="./assets/css/reset.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" href="./assets/css/style.css">
 
-
-    <!-- Bootstrap -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
-    <link rel="stylesheet" href="./assets/css/style.css">
-
-    
 
     <!-- FIREBASE -->
     <script src="https://www.gstatic.com/firebasejs/4.11.0/firebase.js"></script>
@@ -28,7 +23,8 @@
 
     <!-- FontAwesome -->
     <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js" integrity="sha384-SlE991lGASHoBfWbelyBPLsUlwY1GwNDJo3jSJO04KZ33K2bwfV9YBauFfnzvynJ" crossorigin="anonymous"></script>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.21.0/moment.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.5/lodash.js"></script>
 
     <!-- Jquery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -62,8 +58,73 @@
 
         <div class="container">
             <div class="row>">
-                <div id="mainLanding" class="bg-white panel">
-                    <p>Hello, welcome to Tailfeather</p>
+                <div id="mainLanding" class="bg-white panel">         
+          <div class="row">
+            <div class="container col-12 text-center">
+                <h1 id="artistName">Search for an artist</h1>
+                <div class='rating-stars text-center'>
+                    <ul id='stars'>
+                      <li class='star' title='Poor' data-value='1'>
+                        <i class='fa fa-star fa-fw'></i>
+                      </li>
+                      <li class='star' title='Fair' data-value='2'>
+                        <i class='fa fa-star fa-fw'></i>
+                      </li>
+                      <li class='star' title='Good' data-value='3'>
+                        <i class='fa fa-star fa-fw'></i>
+                      </li>
+                      <li class='star' title='Excellent' data-value='4'>
+                        <i class='fa fa-star fa-fw'></i>
+                      </li>
+                      <li class='star' title='WOW!!!' data-value='5'>
+                        <i class='fa fa-star fa-fw'></i>
+                      </li>
+                    </ul>
+                  </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="container col-md-6" id="artistPicDiv">
+
+            </div>
+            <div class="container col-md-6" id="artistBioDiv">
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="container col-12" id="youtubeDiv">
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        Saved ratings
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Artist Name</th>
+                                    <th scope="col">Rating</th>
+                                    <th scope="col">Date Added</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Insert firebase data here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+            <br>
+
+
+        </div>
                     
                 </div>
             </div>

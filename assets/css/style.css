@@ -65,3 +65,43 @@
 #mainLanding {
     margin: 20px 0;
 }
+
+body {
+    padding-top: var(--ht);
+}
+
+.row {
+    margin-bottom: 4em;
+}
+
+.rating-stars ul>li.star {
+    display: inline-block;
+    font-size: 3em;
+}
+
+
+.hover {
+    color: #FFCC36;
+}
+
+.selected {
+    color: #FF912C;
+}
+
+h1 {
+    padding-bottom: .5em;
+}
+
+#artistPicDiv {
+    text-align: center;
+    padding: 1em;
+}
+
+#artistBioDiv {
+    text-align: center;
+    padding: 1em;
+}
+
+.card-header {
+    text-align: center;
+}

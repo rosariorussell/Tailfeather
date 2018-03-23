@@ -1,4 +1,8 @@
-
+let artist = ''
+var currentTrack = ''
+var artistPic = ''
+var artistBio = ''
+var lastFmKey = ''
 
 // FIREBASE
   // Initialize Firebase
@@ -196,7 +200,97 @@
     app.isUserSignedIn();
     //listen for username
     
-    
+    $('#searchButton').click(function (event) {
+    event.preventDefault();
+    artist = _.startCase($('#searchBar').val().trim())
+  console.log(artist);
+    $('#searchBar').val('')
+    $('#artistName').text(artist)
+    $('.star').each(function () {
+      $(this).removeClass('selected');
+    })
+
+    // get JSON data from 2 APIs
+    var youtubeKey = 'https://www.googleapis.com/youtube/v3/search?part=snippet&q=' + artist + '&key=AIzaSyDKESyOchwYmT_52LK5F2RZ-aXUP0Y6Qf4'
+    lastFmKey = 'http://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist=' + artist + '&api_key=1e9fc5247766066fcb2651b3458fb07e&format=json'
+    var lastFmKey2 = 'http://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist=' + artist + '&api_key=1e9fc5247766066fcb2651b3458fb07e&format=json'
+    var youtubeJson;
+    var lastfmJson;
+
+    // 2 simultaneous AJAX calls
+    $.when(
+      $.ajax({
+        url: youtubeKey,
+        method: "GET",
+        success: function (response) {
+          youtubeJson = response
+        }
+      }),
+      $.ajax({
+        url: lastFmKey,
+        method: "GET",
+        success: function (response) {
+          lastfmJson = response
+        }
+      })
+    ).then(function () {
+      currentTrack = youtubeJson.items[0].id.videoId;
+      $("#youtubeDiv").html('<iframe width="100%" height="415" src="https://www.youtube.com/embed/' + currentTrack + '" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>')
+      artistPic = lastfmJson.artist.image[4]["#text"]
+      artistBio = lastfmJson.artist.bio.summary
+      $("#artistPicDiv").html('<img src="' + artistPic + '">')
+      $("#artistBioDiv").html(artistBio)
+    });
+  })
+
+  // Rating mouseover and mouseout functionality
+  $('#stars li').on('mouseover', function () {
+    var onStar = parseInt($(this).data('value'));
+    $(this).parent().children('li.star').each(function (e) {
+      if (e < onStar) {
+        $(this).addClass('hover');
+      } else {
+        $(this).removeClass('hover');
+      }
+    });
+
+  }).on('mouseout', function () {
+    $(this).parent().children('li.star').each(function () {
+      $(this).removeClass('hover');
+    });
+  });
+
+// Accept artist rating
+  $('#stars li').on('click', function () {
+    var onStar = parseInt($(this).data('value'));
+    var stars = $(this).parent().children('li.star');
+    var dateAdded = moment(new Date()).format('X')
+
+    // Update star UI after rating accepted
+    for (let i = 0; i < stars.length; i++) {
+      $(stars[i]).removeClass('selected');
+    }
+    for (let i = 0; i < onStar; i++) {
+      $(stars[i]).addClass('selected');
+    }
+
+    // Save the rating to Firebase
+    var ratingValue = parseInt($('#stars li.selected').last().data('value'));
+
+    saveToDb(ratingValue, dateAdded);
+
+  });
+
+  function saveToDb(rating, date) {
+    console.log(rating, date, artist)
+    var addedArtist = {
+      artist: artist,
+      rating: rating,
+      dateAdded: date
+    }
+    database.ref().push(addedArtist)
+  }
+
     
 
     //click event for profile icon top right
