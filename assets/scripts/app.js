@@ -24,9 +24,9 @@ var lastFmKey = ''
   const database = firebase.database();
 
 
-  
 
-  
+
+
 //Shared secret 539fbc65bef57dca35929b3ef2c22e10
 //Registered to mricart881
 
@@ -42,7 +42,7 @@ var lastFmKey = ''
     ///////////////////////////////////////////////
     createUser: function(email, pass, name, lname){
       auth.createUserWithEmailAndPassword(email,pass)
-      
+
 
       .catch(function(error) {
             // Handle Errors here.
@@ -85,7 +85,7 @@ var lastFmKey = ''
               else if(errorCode = "auth/wrong-password"){
                 return $("#sign-in-password").css("border", "1px solid red");
               }
-              
+
         });
     },
 
@@ -102,7 +102,7 @@ var lastFmKey = ''
 
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
-          
+
           $("#sign-in-modal").modal('hide');
           $("#sign-out-button").removeClass('hide');
           app.getUserName();
@@ -116,10 +116,10 @@ var lastFmKey = ''
     },
 
     updateProfileInfo: function(name, lname){
-      
+
           database.ref().child(auth.currentUser.uid).set({"name": name, "lname": lname});
-        
-          
+
+
     },
 
     //we use this function to validate password and callback a function
@@ -129,10 +129,10 @@ var lastFmKey = ''
           .done(function(){
             MyFunction;
           })
-          .catch(function(error){ 
+          .catch(function(error){
 
             console.log(error.message);
-            
+
 
           });
 
@@ -151,7 +151,7 @@ var lastFmKey = ''
     resetSignInForm: function(){
 
       $("#sign-in-modal-wrong-user-name").remove();
-      
+
       $("#sign-in-email").css("border", "1px solid #ced4da");
       $("#sign-in-password").css("border", "1px solid #ced4da");
       $("#sign-in-email").val("");
@@ -160,8 +160,8 @@ var lastFmKey = ''
     },
 
     getUserName: function(){
-        
-        
+
+
           database.ref(auth.currentUser.uid + "/").on("value", function(snapshot){
 
             if($("#signedInName").length < 1){
@@ -169,7 +169,7 @@ var lastFmKey = ''
               $("#header").append($displayName);
             }
           });
-        
+
     }
 
 
@@ -199,11 +199,10 @@ var lastFmKey = ''
     //start listening for Authentication changes
     app.isUserSignedIn();
     //listen for username
-    
+
     $('#searchButton').click(function (event) {
     event.preventDefault();
     artist = _.startCase($('#searchBar').val().trim())
-  console.log(artist);
     $('#searchBar').val('')
     $('#artistName').text(artist)
     $('.star').each(function () {
@@ -213,9 +212,11 @@ var lastFmKey = ''
     // get JSON data from 2 APIs
     var youtubeKey = 'https://www.googleapis.com/youtube/v3/search?part=snippet&q=' + artist + '&key=AIzaSyDKESyOchwYmT_52LK5F2RZ-aXUP0Y6Qf4'
     var lastFmKey = 'https://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist=' + artist + '&api_key=1e9fc5247766066fcb2651b3458fb07e&format=json'
-    var lastFmKey2 = 'https://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist=' + artist + '&api_key=1e9fc5247766066fcb2651b3458fb07e&format=json'
+    var lastFmKey2 = 'https://ws.audioscrobbler.com/2.0/?method=artist.getSimilar&artist=' + artist + '&api_key=1e9fc5247766066fcb2651b3458fb07e&format=json'
     var youtubeJson;
     var lastfmJson;
+    const numberOfSimilarArtists = 8
+    var similarArtistsArray = []
 
     // 2 simultaneous AJAX calls
     $.when(
@@ -232,6 +233,15 @@ var lastFmKey = ''
         success: function (response) {
           lastfmJson = response
         }
+      }),
+      $.ajax({
+        url: lastFmKey2,
+        method: "GET",
+        success: function (response) {
+          for (i=0;i<numberOfSimilarArtists;i++){
+            similarArtistsArray.push(response.similarartists.artist[_.random(0,99)].name)
+          }
+        }
       })
     ).then(function () {
       currentTrack = youtubeJson.items[0].id.videoId;
@@ -240,6 +250,8 @@ var lastFmKey = ''
       artistBio = lastfmJson.artist.bio.summary
       $("#artistPicDiv").html('<img src="' + artistPic + '">')
       $("#artistBioDiv").html(artistBio)
+      similarArtistsArray = _uniq(similarArtistsArray)
+      $("#similarArtistDiv").html('<tr><td>' + similarArtistsArray[0] + '</td><td>' + similarArtistsArray[1] + '</td><td>' + similarArtistsArray[2] + '</td><td>' + similarArtistsArray[3] + '</td><td>' + similarArtistsArray[4] + '</td></tr>')
     });
   })
 
@@ -291,7 +303,7 @@ var lastFmKey = ''
     database.ref().push(addedArtist)
   }
 
-    
+
 
     //click event for profile icon top right
     //if user not logged in, modal log in
@@ -310,10 +322,10 @@ var lastFmKey = ''
 
     //submit event on login form
     $("#sign-in-form").on("submit", function(e){
-      
+
       e.preventDefault();
 
-      
+
 
 
       //get Email and PW from form
@@ -326,7 +338,7 @@ var lastFmKey = ''
       //reset form incase we caught errors before closing the modal
       app.resetSignInForm();
 
-      
+
     });
 
 
@@ -343,7 +355,7 @@ var lastFmKey = ''
         $("#sign-in-form").remove();
         var $form = $("<form id='sign-up-form'>");
         var $body = $("<div class='modal-body'>").appendTo($form);
-        
+
 
 
         var $name = $("<div>").addClass("form-group");
@@ -365,13 +377,13 @@ var lastFmKey = ''
 
         $body.prepend($name, $lname, $email, $pass);
         $form.appendTo($(".modal-body"));
-        
+
         $("<input>").attr({"id": "sign-up-form-button", "class": "btn btn-success", "type": "submit", "value": "Sign Up!"}).appendTo($body);
         $("#sign-up-button").remove();
         $("#sign-in-button").remove();
 
-        
-        
+
+
     });
 
 
@@ -398,14 +410,14 @@ var lastFmKey = ''
     // do something…
       window.location.reload();
     })
-    
-      
-    
+
+
+
   });
 
 
-  
 
 
-  
+
+
 
