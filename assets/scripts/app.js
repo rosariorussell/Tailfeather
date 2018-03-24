@@ -1,8 +1,8 @@
-let artist = ''
-var currentTrack = ''
-var artistPic = ''
-var artistBio = ''
-var lastFmKey = ''
+let artist = '';
+var currentTrack = '';
+var artistPic = '';
+var artistBio = '';
+var lastFmKey = '';
 
 // FIREBASE
   // Initialize Firebase
@@ -26,10 +26,10 @@ var lastFmKey = ''
 
   
 
-  
-//Shared secret 539fbc65bef57dca35929b3ef2c22e10
-//Registered to mricart881
-
+///////////////////\
+//  SongKick ///////\
+/////////////////////
+  const songkickkey = "3Vg6ygoAQlgPfJdi";
 
 
   var app = {
@@ -106,10 +106,12 @@ var lastFmKey = ''
           $("#sign-in-modal").modal('hide');
           $("#sign-out-button").removeClass('hide');
           app.getUserName();
+          app.getMyRatings();
           return app.userSignedIn = true;
 
         } else {
           $("#sign-out-button").addClass('hide');
+          $(".ratingsResult").remove();
           return app.userSignedIn = false;
         }
       });
@@ -164,12 +166,88 @@ var lastFmKey = ''
         
           database.ref(auth.currentUser.uid + "/").on("value", function(snapshot){
 
+            app.userName = snapshot.val().name + " " + snapshot.val().lname;
             if($("#signedInName").length < 1){
               var $displayName = $("<p id='signedInName'>").text(`Signed In as: ${snapshot.val().name} ${snapshot.val().lname}`);
               $("#header").append($displayName);
             }
           });
         
+    },
+
+    getMyRatings: function(){
+      database.ref(auth.currentUser.uid + "/ratings/").on("child_added", function(snapshot){
+        var $tr = $("<tr class='ratingsResult'>");
+        var $tdArtist = $("<td>").appendTo($tr);
+        var $tdRating = $("<td>").appendTo($tr);
+        var $tdDate = $("<td>").appendTo($tr);
+
+        $tdArtist.text(snapshot.key);
+        $tdRating.text(snapshot.val().rating);
+        $tdDate.text(Date(snapshot.val().date));
+
+        $("#myRatingsBody").append($tr);
+      });
+    },
+
+    drawModalSignUp: function(){
+
+      $(".modal-body").empty();
+        var $form = $("<form id='sign-up-form'>");
+        var $body = $(".modal-body");
+        
+
+
+        var $name = $("<div>").addClass("form-group");
+        $("<label>").addClass("for", "sign-up-name").text("Name").appendTo($name);
+        $("<input>").attr({"type": "input", "id": "sign-up-name", "class": "form-control", "placeholder": "Enter name"}).appendTo($name);
+
+        var $lname = $("<div>").addClass("form-group");
+        $("<label>").addClass("for", "sign-up-lname").text("Last Name").appendTo($lname);
+        $("<input>").attr({"type": "input", "id": "sign-up-lname", "class": "form-control", "placeholder": "Enter last name"}).appendTo($lname);
+
+        var $email = $("<div>").addClass("form-group");
+        $("<label>").addClass("for", "sign-up-email").text("Email").appendTo($email);
+        $("<input>").attr({"aria-describedby": "emailHelp", "type": "email", "id": "sign-up-email", "class": "form-control", "placeholder": "Enter email"}).appendTo($email);
+
+        var $pass = $("<div>").addClass("form-group");
+        $("<label>").addClass("for", "sign-up-password").text("Password").appendTo($pass);
+        $("<input>").attr({"type": "password", "id": "sign-up-password", "class": "form-control", "placeholder": "Password"}).appendTo($pass);
+
+
+        $form.prepend($name, $lname, $email, $pass);
+        $form.appendTo($body);
+        
+        $("<button>").attr({"id": "sign-up-form-button", "class": "btn btn-success", "type": "submit"}).text("Sing Up!").appendTo($form);
+        
+
+
+    },
+
+    drawModalSignIn: function(){
+
+      $(".modal-body").empty();
+        var $form = $("<form id='sign-in-form'>");
+        var $body = $(".modal-body");
+        
+
+
+        var $email = $("<div>").addClass("form-group");
+        $("<label>").addClass("for", "sign-in-email").text("Email").appendTo($email);
+        $("<input>").attr({"aria-describedby": "emailHelp", "type": "email", "id": "sign-in-email", "class": "form-control", "placeholder": "Enter email"}).appendTo($email);
+
+        var $pass = $("<div>").addClass("form-group");
+        $("<label>").addClass("for", "sign-in-password").text("Password").appendTo($pass);
+        $("<input>").attr({"type": "password", "id": "sign-in-password", "class": "form-control", "placeholder": "Password"}).appendTo($pass);
+
+
+        $form.prepend($email, $pass);
+        $form.appendTo($body);
+        
+        $("<button>").attr({"id": "sign-in-form-button", "class": "btn btn-success", "type": "submit"}).text("Sign In").appendTo($form);
+        $("<button>").attr({"id": "sign-up-button", "class": "btn btn-secondary"}).text("Sign Up").appendTo($form);
+
+
     }
 
 
@@ -277,7 +355,10 @@ var lastFmKey = ''
     // Save the rating to Firebase
     var ratingValue = parseInt($('#stars li.selected').last().data('value'));
 
-    saveToDb(ratingValue, dateAdded);
+    if(app.userSignedIn){
+      saveToDb(ratingValue, dateAdded);
+    }
+
 
   });
 
@@ -288,7 +369,10 @@ var lastFmKey = ''
       rating: rating,
       dateAdded: date
     }
-    database.ref().push(addedArtist)
+
+    database.ref(auth.currentUser.uid).child("ratings").child(addedArtist.artist).set({"rating": addedArtist.rating, "date": addedArtist.dateAdded});
+    database.ref().child("GlobalRatings").child(addedArtist.artist).child(auth.currentUser.uid).set({"ratedBy": app.userName, "rating": addedArtist.rating, "date": addedArtist.dateAdded});
+    
   }
 
     
@@ -298,7 +382,8 @@ var lastFmKey = ''
     //else... send to profile
     $("#header").on("click", "#profileIcon", function(){
       if(app.userSignedIn === false){
-        app.resetSignInForm();
+        // app.resetSignInForm();
+        app.drawModalSignIn();
         $("#sign-in-modal").modal('toggle');
 
 
@@ -309,7 +394,7 @@ var lastFmKey = ''
     });
 
     //submit event on login form
-    $("#sign-in-form").on("submit", function(e){
+    $(".modal-body").on("submit", "#sign-in-form", function(e){
       
       e.preventDefault();
 
@@ -340,35 +425,7 @@ var lastFmKey = ''
     //click event signup button in sign-in-modal
     $("#sign-in-modal").on("click", "#sign-up-button", function(){
 
-        $("#sign-in-form").remove();
-        var $form = $("<form id='sign-up-form'>");
-        var $body = $("<div class='modal-body'>").appendTo($form);
-        
-
-
-        var $name = $("<div>").addClass("form-group");
-        $("<label>").addClass("for", "sign-up-name").text("Name").appendTo($name);
-        $("<input>").attr({"type": "input", "id": "sign-up-name", "class": "form-control", "placeholder": "Enter name"}).appendTo($name);
-
-        var $lname = $("<div>").addClass("form-group");
-        $("<label>").addClass("for", "sign-up-lname").text("Last Name").appendTo($lname);
-        $("<input>").attr({"type": "input", "id": "sign-up-lname", "class": "form-control", "placeholder": "Enter last name"}).appendTo($lname);
-
-        var $email = $("<div>").addClass("form-group");
-        $("<label>").addClass("for", "sign-up-email").text("Email").appendTo($email);
-        $("<input>").attr({"aria-describedby": "emailHelp", "type": "email", "id": "sign-up-email", "class": "form-control", "placeholder": "Enter email"}).appendTo($email);
-
-        var $pass = $("<div>").addClass("form-group");
-        $("<label>").addClass("for", "sign-up-password").text("Password").appendTo($pass);
-        $("<input>").attr({"type": "password", "id": "sign-up-password", "class": "form-control", "placeholder": "Password"}).appendTo($pass);
-
-
-        $body.prepend($name, $lname, $email, $pass);
-        $form.appendTo($(".modal-body"));
-        
-        $("<input>").attr({"id": "sign-up-form-button", "class": "btn btn-success", "type": "submit", "value": "Sign Up!"}).appendTo($body);
-        $("#sign-up-button").remove();
-        $("#sign-in-button").remove();
+        app.drawModalSignUp();
 
         
         
@@ -377,7 +434,7 @@ var lastFmKey = ''
 
 
     //submit event on sign-up form
-    $("#sign-in-modal").on("submit", "#sign-up-form", function(e){
+    $(".modal-body").on("submit", "#sign-up-form", function(e){
       e.preventDefault();
 
       var $name = $("#sign-up-name").val();
@@ -393,11 +450,10 @@ var lastFmKey = ''
     });
 
 
-    // Hide modal event reload to reset sign in
-    $('#sign-in-modal').on('hidden.bs.modal', function () {
-    // do something…
-      window.location.reload();
-    })
+  
+
+
+
     
       
     
