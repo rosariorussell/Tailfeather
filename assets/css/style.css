@@ -127,3 +127,11 @@ h1 {
 .card-header {
     text-align: center;
 }
+
+.similarArtist {
+    cursor: pointer;
+}
+
+.similarArtist:hover {
+    text-decoration: underline;
+}
