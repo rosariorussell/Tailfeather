@@ -250,7 +250,8 @@ var lastFmKey = ''
       artistBio = lastfmJson.artist.bio.summary
       $("#artistPicDiv").html('<img src="' + artistPic + '">')
       $("#artistBioDiv").html(artistBio)
-      similarArtistsArray = _uniq(similarArtistsArray)
+      similarArtistsArray = _.uniq(similarArtistsArray)
+      console.log(similarArtistsArray)
       $("#similarArtistDiv").html('<tr><td>' + similarArtistsArray[0] + '</td><td>' + similarArtistsArray[1] + '</td><td>' + similarArtistsArray[2] + '</td><td>' + similarArtistsArray[3] + '</td><td>' + similarArtistsArray[4] + '</td></tr>')
     });
   })
