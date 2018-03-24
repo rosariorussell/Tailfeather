@@ -4,6 +4,8 @@
     border-bottom: 1px solid black;
 }
 
+
+
 #brand {
     font-size: 40px;
 }
@@ -16,8 +18,8 @@
 
 #searchForm {
     display: inline-block;
-    top: -7px;
     position: relative;
+
 }
 
 #searchIcon {
@@ -30,23 +32,25 @@
 }
 
 #searchBar {
-    display: inline-block;
+    display: inline;
     border-top-right-radius: 0px;
     border-bottom-right-radius: 0px;
     text-align: right;
     padding-bottom: 0;
     padding-top: 0;
     outline: 0;
+    display: inline-block;
 
 }
 
 #searchButton {
 
-    display: inline-block;
+    display: inline;
     border-top-left-radius: 0px;
     border-bottom-left-radius: 0px;
     padding-bottom: 0;
     padding-top: 0;
+    display: inline-block;
 
 }
 
@@ -64,6 +68,10 @@
 
 #mainLanding {
     margin: 20px 0;
+}
+
+.similarArtist {
+    cursor: pointer;
 }
 
 body {
@@ -105,3 +113,4 @@ h1 {
 .card-header {
     text-align: center;
 }
+

@@ -24,12 +24,13 @@ var lastFmKey = '';
   const database = firebase.database();
 
 
-  
+
 
 ///////////////////\
 //  SongKick ///////\
 /////////////////////
   const songkickkey = "3Vg6ygoAQlgPfJdi";
+
 
 
   var app = {
@@ -42,7 +43,7 @@ var lastFmKey = '';
     ///////////////////////////////////////////////
     createUser: function(email, pass, name, lname){
       auth.createUserWithEmailAndPassword(email,pass)
-      
+
 
       .catch(function(error) {
             // Handle Errors here.
@@ -85,7 +86,7 @@ var lastFmKey = '';
               else if(errorCode = "auth/wrong-password"){
                 return $("#sign-in-password").css("border", "1px solid red");
               }
-              
+
         });
     },
 
@@ -102,7 +103,7 @@ var lastFmKey = '';
 
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
-          
+
           $("#sign-in-modal").modal('hide');
           $("#sign-out-button").removeClass('hide');
           app.getUserName();
@@ -118,10 +119,10 @@ var lastFmKey = '';
     },
 
     updateProfileInfo: function(name, lname){
-      
+
           database.ref().child(auth.currentUser.uid).set({"name": name, "lname": lname});
-        
-          
+
+
     },
 
     //we use this function to validate password and callback a function
@@ -131,10 +132,10 @@ var lastFmKey = '';
           .done(function(){
             MyFunction;
           })
-          .catch(function(error){ 
+          .catch(function(error){
 
             console.log(error.message);
-            
+
 
           });
 
@@ -153,7 +154,7 @@ var lastFmKey = '';
     resetSignInForm: function(){
 
       $("#sign-in-modal-wrong-user-name").remove();
-      
+
       $("#sign-in-email").css("border", "1px solid #ced4da");
       $("#sign-in-password").css("border", "1px solid #ced4da");
       $("#sign-in-email").val("");
@@ -162,8 +163,8 @@ var lastFmKey = '';
     },
 
     getUserName: function(){
-        
-        
+
+
           database.ref(auth.currentUser.uid + "/").on("value", function(snapshot){
 
             app.userName = snapshot.val().name + " " + snapshot.val().lname;
@@ -172,6 +173,7 @@ var lastFmKey = '';
               $("#header").append($displayName);
             }
           });
+
         
     },
 
@@ -247,7 +249,71 @@ var lastFmKey = '';
         $("<button>").attr({"id": "sign-in-form-button", "class": "btn btn-success", "type": "submit"}).text("Sign In").appendTo($form);
         $("<button>").attr({"id": "sign-up-button", "class": "btn btn-secondary"}).text("Sign Up").appendTo($form);
 
+    },
 
+    runSearch: function(queryArtist){
+      $('html, body').animate({ scrollTop: 0 }, 'fast');
+      $("#similarArtistDiv").empty();
+
+      var artist = _.startCase(queryArtist)
+    $('#searchBar').val('')
+    $('#artistName').text(artist)
+    $('.star').each(function () {
+      $(this).removeClass('selected');
+    });
+
+    // get JSON data from 2 APIs
+    var youtubeKey = 'https://www.googleapis.com/youtube/v3/search?part=snippet&q=' + artist + '&key=AIzaSyDKESyOchwYmT_52LK5F2RZ-aXUP0Y6Qf4'
+    var lastFmKey = 'https://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist=' + artist + '&api_key=1e9fc5247766066fcb2651b3458fb07e&format=json'
+    var lastFmKey2 = 'https://ws.audioscrobbler.com/2.0/?method=artist.getSimilar&artist=' + artist + '&api_key=1e9fc5247766066fcb2651b3458fb07e&format=json'
+    var youtubeJson;
+    var lastfmJson;
+    const numberOfSimilarArtists = 8
+    var similarArtistsArray = []
+
+    // 2 simultaneous AJAX calls
+    $.when(
+      $.ajax({
+        url: youtubeKey,
+        method: "GET",
+        success: function (response) {
+          youtubeJson = response
+        }
+      }),
+      $.ajax({
+        url: lastFmKey,
+        method: "GET",
+        success: function (response) {
+          lastfmJson = response
+        }
+      }),
+      $.ajax({
+        url: lastFmKey2,
+        method: "GET",
+        success: function (response) {
+          for (i=0;i<numberOfSimilarArtists;i++){
+            similarArtistsArray.push(response.similarartists.artist[_.random(0,99)].name)
+          }
+        }
+      })
+    ).then(function () {
+      currentTrack = youtubeJson.items[0].id.videoId;
+      $("#youtubeDiv").html('<iframe width="100%" height="415" src="https://www.youtube.com/embed/' + currentTrack + '" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>')
+      artistPic = lastfmJson.artist.image[4]["#text"]
+      artistBio = lastfmJson.artist.bio.summary
+      $("#artistPicDiv").html('<img src="' + artistPic + '">')
+      $("#artistBioDiv").html(artistBio)
+      similarArtistsArray = _.uniq(similarArtistsArray)
+      console.log(similarArtistsArray)
+      
+      //create a row for the similar Artists
+      var $similarArtistRow = $("<tr>").appendTo("#similarArtistDiv");
+      
+      //for each similar artist we create a Cell
+      $.each(similarArtistsArray, function(i,v){
+        var $similarArtist = $("<td>").addClass("similarArtist").text(v).appendTo($similarArtistRow);
+      });
+    });
     }
 
 
@@ -277,48 +343,12 @@ var lastFmKey = '';
     //start listening for Authentication changes
     app.isUserSignedIn();
     //listen for username
-    
-    $('#searchButton').click(function (event) {
+
+    $('#searchForm').on("submit", function(event) {
     event.preventDefault();
-    artist = _.startCase($('#searchBar').val().trim())
-  console.log(artist);
-    $('#searchBar').val('')
-    $('#artistName').text(artist)
-    $('.star').each(function () {
-      $(this).removeClass('selected');
-    })
 
-    // get JSON data from 2 APIs
-    var youtubeKey = 'https://www.googleapis.com/youtube/v3/search?part=snippet&q=' + artist + '&key=AIzaSyDKESyOchwYmT_52LK5F2RZ-aXUP0Y6Qf4'
-    var lastFmKey = 'https://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist=' + artist + '&api_key=1e9fc5247766066fcb2651b3458fb07e&format=json'
-    var lastFmKey2 = 'https://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist=' + artist + '&api_key=1e9fc5247766066fcb2651b3458fb07e&format=json'
-    var youtubeJson;
-    var lastfmJson;
-
-    // 2 simultaneous AJAX calls
-    $.when(
-      $.ajax({
-        url: youtubeKey,
-        method: "GET",
-        success: function (response) {
-          youtubeJson = response
-        }
-      }),
-      $.ajax({
-        url: lastFmKey,
-        method: "GET",
-        success: function (response) {
-          lastfmJson = response
-        }
-      })
-    ).then(function () {
-      currentTrack = youtubeJson.items[0].id.videoId;
-      $("#youtubeDiv").html('<iframe width="100%" height="415" src="https://www.youtube.com/embed/' + currentTrack + '" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>')
-      artistPic = lastfmJson.artist.image[4]["#text"]
-      artistBio = lastfmJson.artist.bio.summary
-      $("#artistPicDiv").html('<img src="' + artistPic + '">')
-      $("#artistBioDiv").html(artistBio)
-    });
+    app.runSearch($("#searchBar").val());
+    
   })
 
   // Rating mouseover and mouseout functionality
@@ -375,7 +405,7 @@ var lastFmKey = '';
     
   }
 
-    
+
 
     //click event for profile icon top right
     //if user not logged in, modal log in
@@ -394,11 +424,12 @@ var lastFmKey = '';
     });
 
     //submit event on login form
+
     $(".modal-body").on("submit", "#sign-in-form", function(e){
-      
+
       e.preventDefault();
 
-      
+
 
 
       //get Email and PW from form
@@ -411,7 +442,7 @@ var lastFmKey = '';
       //reset form incase we caught errors before closing the modal
       app.resetSignInForm();
 
-      
+
     });
 
 
@@ -427,8 +458,7 @@ var lastFmKey = '';
 
         app.drawModalSignUp();
 
-        
-        
+
     });
 
 
@@ -449,19 +479,19 @@ var lastFmKey = '';
 
     });
 
-
-  
-
-
-
-    
+    //click event for similar artists
+    $("#similarArtistDiv").on("click", ".similarArtist", function(){
       
-    
+      app.runSearch($(this).text());
+    });
+
+
+
   });
 
 
-  
 
 
-  
+
+
 
