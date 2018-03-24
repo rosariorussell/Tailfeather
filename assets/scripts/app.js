@@ -190,6 +190,8 @@ var lastFmKey = '';
 
         $("#myRatingsBody").append($tr);
       });
+
+      
     },
 
     drawModalSignUp: function(){
@@ -258,9 +260,7 @@ var lastFmKey = '';
       var artist = _.startCase(queryArtist)
     $('#searchBar').val('')
     $('#artistName').text(artist)
-    $('.star').each(function () {
-      $(this).removeClass('selected');
-    });
+    
 
     // get JSON data from 2 APIs
     var youtubeKey = 'https://www.googleapis.com/youtube/v3/search?part=snippet&q=' + artist + '&key=AIzaSyDKESyOchwYmT_52LK5F2RZ-aXUP0Y6Qf4'
@@ -316,6 +316,44 @@ var lastFmKey = '';
       }
       });
     });
+
+
+    // Accept artist rating
+  $('#stars li').on('click', function () {
+    var onStar = parseInt($(this).data('value'));
+    var stars = $(this).parent().children('li.star');
+    var dateAdded = moment(new Date()).format('X')
+
+    // Update star UI after rating accepted
+    for (let i = 0; i < stars.length; i++) {
+      $(stars[i]).removeClass('selected');
+    }
+    for (let i = 0; i < onStar; i++) {
+      $(stars[i]).addClass('selected');
+    }
+
+    // Save the rating to Firebase
+    var ratingValue = parseInt($('#stars li.selected').last().data('value'));
+
+    
+      saveToDb(ratingValue, dateAdded);
+    
+
+
+  });
+
+  function saveToDb(rating, date) {
+    console.log(rating, date, artist)
+    var addedArtist = {
+      artist: artist,
+      rating: rating,
+      dateAdded: date
+    }
+
+    database.ref(auth.currentUser.uid + "/").child("ratings").child(addedArtist.artist).set({"rating": addedArtist.rating, "date": addedArtist.dateAdded});
+    database.ref().child("GlobalRatings").child(addedArtist.artist).child(auth.currentUser.uid).set({"ratedBy": app.userName, "rating": addedArtist.rating, "date": addedArtist.dateAdded});
+    
+  }
     }
 
 
@@ -349,6 +387,10 @@ var lastFmKey = '';
     $('#searchForm').on("submit", function(event) {
     event.preventDefault();
 
+    $('.star').each(function () {
+      $(this).removeClass('selected');
+    });
+
     app.runSearch($("#searchBar").val());
     
   })
@@ -370,42 +412,7 @@ var lastFmKey = '';
     });
   });
 
-// Accept artist rating
-  $('#stars li').on('click', function () {
-    var onStar = parseInt($(this).data('value'));
-    var stars = $(this).parent().children('li.star');
-    var dateAdded = moment(new Date()).format('X')
 
-    // Update star UI after rating accepted
-    for (let i = 0; i < stars.length; i++) {
-      $(stars[i]).removeClass('selected');
-    }
-    for (let i = 0; i < onStar; i++) {
-      $(stars[i]).addClass('selected');
-    }
-
-    // Save the rating to Firebase
-    var ratingValue = parseInt($('#stars li.selected').last().data('value'));
-
-    if(app.userSignedIn){
-      saveToDb(ratingValue, dateAdded);
-    }
-
-
-  });
-
-  function saveToDb(rating, date) {
-    console.log(rating, date, artist)
-    var addedArtist = {
-      artist: artist,
-      rating: rating,
-      dateAdded: date
-    }
-
-    database.ref(auth.currentUser.uid).child("ratings").child(addedArtist.artist).set({"rating": addedArtist.rating, "date": addedArtist.dateAdded});
-    database.ref().child("GlobalRatings").child(addedArtist.artist).child(auth.currentUser.uid).set({"ratedBy": app.userName, "rating": addedArtist.rating, "date": addedArtist.dateAdded});
-    
-  }
 
 
 
