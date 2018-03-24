@@ -311,7 +311,9 @@ var lastFmKey = '';
       
       //for each similar artist we create a Cell
       $.each(similarArtistsArray, function(i,v){
-        var $similarArtist = $("<td>").addClass("similarArtist").text(v).appendTo($similarArtistRow);
+        if($(".similarArtist").length < 3){
+        var $similarArtist = $("<td>").addClass("similarArtist col-xs-4").text(v).appendTo($similarArtistRow);
+      }
       });
     });
     }
