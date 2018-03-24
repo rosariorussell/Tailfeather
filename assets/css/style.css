@@ -4,8 +4,6 @@
     border-bottom: 1px solid black;
 }
 
-
-
 #brand {
     font-size: 40px;
 }
@@ -13,13 +11,26 @@
 #mainHeading {
     display: inline-block;
     margin: 0;
+    color: #22252a;
+    font-size: 32px;
+    vertical-align: top;
+    margin: 3px 0 0 5px;
+}
 
+.logo {
+    display: flex;
+}
+
+.search {
+    flex: auto;
+    display: flex;
+    justify-content: center;
 }
 
 #searchForm {
     display: inline-block;
+    top: 15px;
     position: relative;
-
 }
 
 #searchIcon {
@@ -32,50 +43,49 @@
 }
 
 #searchBar {
-    display: inline;
+    display: inline-block;
     border-top-right-radius: 0px;
     border-bottom-right-radius: 0px;
     text-align: right;
     padding-bottom: 0;
     padding-top: 0;
     outline: 0;
-    display: inline-block;
 
 }
 
 #searchButton {
 
-    display: inline;
+    display: inline-block;
     border-top-left-radius: 0px;
     border-bottom-left-radius: 0px;
     padding-bottom: 0;
     padding-top: 0;
-    display: inline-block;
 
 }
 
 #profileIcon {
     font-size: 30px;
-    position: absolute;
-    
-    bottom: 15px;
+    margin: 10px 0;
 }
 
 .hide {
     display: none;
 }
 
+.btn-danger {
+    color: #fff;
+    background-color: #dc3545;
+    border-color: #dc3545;
+    margin-left: 10px;
+}
 
 #mainLanding {
     margin: 20px 0;
 }
 
-.similarArtist {
-    cursor: pointer;
-}
-
 body {
     padding-top: var(--ht);
+    
 }
 
 .row {
@@ -113,4 +123,3 @@ h1 {
 .card-header {
     text-align: center;
 }
-
